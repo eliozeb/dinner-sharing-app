@@ -1,0 +1,29 @@
+[
+    {
+        "id": 1,
+        "name": "Grilled Salmon",
+        "description": "Fresh salmon with a lemon butter sauce.",
+        "price": 18.99,
+        "image": "images/grilled-salmon.jpg",
+        "rating": 4.5,
+        "category": "lunch"
+    },
+    {
+        "id": 2,
+        "name": "Caesar Salad",
+        "description": "Crisp romaine lettuce with Caesar dressing.",
+        "price": 9.99,
+        "image": "images/caesar-salad.jpg",
+        "rating": 4.0,
+        "category": "lunch"
+    },
+    {
+        "id": 3,
+        "name": "Mojito",
+        "description": "Classic cocktail with rum, mint, and lime.",
+        "price": 7.50,
+        "image": "images/mojito.jpg",
+        "rating": 4.7,
+        "category": "drink"
+    }
+]

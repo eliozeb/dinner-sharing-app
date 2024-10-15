@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Dinner Sharing App</title>
+    <link rel="stylesheet" href="css/styles.css" />
+    <!-- Add meta tags for responsiveness -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- ... existing meta tags and stylesheets ... -->
+    <!-- Font Awesome CDN Link -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  </head>
+  <body>
+    <!-- Header -->
+    <header>
+      <h1>Dinner Sharing App</h1>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+      <div class="container">
+        <!-- Registration Form -->
+        <section id="registration">
+          <!-- Registration form elements -->
+          <h2>Reserve Your Dinner Table</h2>
+          <form id="reservation-form">
+            <label for="name">Full Name:</label>
+            <input type="text" id="name" name="name" required />
+
+            <label for="email">Email Address:</label>
+            <input type="email" id="email" name="email" required />
+
+            <label for="people">Number of People:</label>
+            <input type="number" id="people" name="people" min="1" required />
+
+            <button type="submit">Proceed to Menu</button>
+          </form>
+        </section>
+
+        <!-- Menu and Order Summary -->
+        <div id="order-section">
+          <!-- Menu Section -->
+          <section id="menu">
+            <!-- Menu items will be dynamically loaded here -->
+            <h2>Select Your Meals and Drinks</h2>
+            <div id="menu-items">
+              <!-- Menu items will be injected here via JavaScript -->
+            </div>
+          </section>
+
+          <!-- Order Summary -->
+          <aside id="order-summary">
+            <!-- Selected items and total price -->
+            <h2>Your Order</h2>
+            <ul id="order-list">
+              <!-- Selected items will appear here -->
+            </ul>
+            <p>Total: $<span id="total-price">0.00</span></p>
+            <button id="checkout-button">Checkout</button>
+          </aside>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+      <p>&copy; 2024 Dinner Sharing App</p>
+    </footer>
+
+    <!-- Modal Structure -->
+    <div id="meal-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal()">&times;</span>
+            <h2 id="modal-meal-name"></h2>
+            <img id="modal-meal-image" src="/images/" alt="">
+            <p id="modal-meal-description"></p>
+            <p id="modal-meal-price"></p>
+            <div id="modal-meal-rating" class="rating" data-rating=""></div>
+            <button id="modal-add-button">Add to Order</button>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="js/app.js"></script>
+  </body>
+</html>
