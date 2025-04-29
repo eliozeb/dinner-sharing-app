@@ -1,5 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
     fetchMenuItems();
+    const savedOrder = localStorage.getItem('currentOrder');
+    if (savedOrder) {
+        order = JSON.parse(savedOrder);
+        updateOrderSummary();
+    }
 });
 
 let menuData = [];
@@ -178,7 +183,15 @@ function renderStars(ratingElement) {
 
 function addToOrder(itemId) {
     const item = menuData.find(menuItem => menuItem.id === itemId);
-    order.push(item);
+    const existingItem = order.find(orderItem => orderItem.id === itemId);
+    
+    if (existingItem) {
+        existingItem.quantity = (existingItem.quantity || 1) + 1;
+    } else {
+        order.push({ ...item, quantity: 1 });
+    }
+    
+    localStorage.setItem('currentOrder', JSON.stringify(order));
     updateOrderSummary();
 }
 
@@ -189,42 +202,103 @@ function updateOrderSummary() {
 
     let totalPrice = 0;
 
-    order.forEach((item, index) => {
-        totalPrice += item.price;
+    if (order.length === 0) {
+        orderList.innerHTML = `
+            <li class="text-gray-500 text-center py-4">
+                Your order is empty
+            </li>
+        `;
+    } else {
+        order.forEach((item, index) => {
+            const quantity = item.quantity || 1;
+            const itemTotal = item.price * quantity;
+            totalPrice += itemTotal;
 
-        const listItem = document.createElement('li');
-        listItem.classList.add(
-            'flex',
-            'justify-between',
-            'items-center',
-            'py-3',
-            'animate-fade-in'
-        );
-        listItem.style.animationDelay = `${index * 100}ms`;
+            const listItem = document.createElement('li');
+            listItem.classList.add(
+                'flex',
+                'justify-between',
+                'items-center',
+                'py-3',
+                'animate-fade-in'
+            );
+            listItem.style.animationDelay = `${index * 100}ms`;
 
-        listItem.innerHTML = `
-            <div class="flex items-center gap-3">
-                <img src="${item.image}" alt="${item.name}" class="w-12 h-12 object-cover rounded-lg">
-                <div>
-                    <h4 class="font-semibold text-gray-800">${item.name}</h4>
-                    <p class="text-green-600 font-medium">$${item.price.toFixed(2)}</p>
+            listItem.innerHTML = `
+                <div class="flex items-center gap-3">
+                    <img src="${item.image}" alt="${item.name}" class="w-12 h-12 object-cover rounded-lg">
+                    <div>
+                        <h4 class="font-semibold text-gray-800">${item.name}</h4>
+                        <div class="flex items-center gap-2">
+                            <button 
+                                class="text-gray-500 hover:text-gray-700 px-2 py-1"
+                                onclick="updateQuantity(${item.id}, ${quantity - 1})">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <span class="text-gray-600">${quantity}</span>
+                            <button 
+                                class="text-gray-500 hover:text-gray-700 px-2 py-1"
+                                onclick="updateQuantity(${item.id}, ${quantity + 1})">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                        <p class="text-green-600 font-medium">$${itemTotal.toFixed(2)}</p>
+                    </div>
                 </div>
-            </div>
+                <button 
+                    class="text-red-500 hover:text-red-700 font-medium transition-colors duration-200"
+                    onclick="removeFromOrder(${index})">
+                    <i class="fas fa-trash"></i>
+                </button>
+            `;
+
+            orderList.appendChild(listItem);
+        });
+
+        // Add clear order button if there are items
+        const clearButton = document.createElement('li');
+        clearButton.classList.add('pt-4', 'mt-4', 'border-t', 'border-gray-200');
+        clearButton.innerHTML = `
             <button 
-                class="text-red-500 hover:text-red-700 font-medium transition-colors duration-200"
-                onclick="removeFromOrder(${index})">
-                Remove
+                class="w-full text-red-500 hover:text-red-700 font-medium py-2 px-4 rounded-lg border border-red-500 hover:border-red-700 transition-colors duration-200"
+                onclick="clearOrder()">
+                Clear Order
             </button>
         `;
-
-        orderList.appendChild(listItem);
-    });
+        orderList.appendChild(clearButton);
+    }
 
     totalPriceElement.textContent = totalPrice.toFixed(2);
 }
 
+function updateQuantity(itemId, newQuantity) {
+    if (newQuantity < 1) {
+        removeItemById(itemId);
+    } else {
+        const item = order.find(orderItem => orderItem.id === itemId);
+        if (item) {
+            item.quantity = newQuantity;
+        }
+    }
+    localStorage.setItem('currentOrder', JSON.stringify(order));
+    updateOrderSummary();
+}
+
+function removeItemById(itemId) {
+    order = order.filter(item => item.id !== itemId);
+    localStorage.setItem('currentOrder', JSON.stringify(order));
+    updateOrderSummary();
+}
+
 function removeFromOrder(index) {
     order.splice(index, 1);
+    localStorage.setItem('currentOrder', JSON.stringify(order));
+    updateOrderSummary();
+}
+
+function clearOrder() {
+    order = [];
+    localStorage.removeItem('currentOrder');
     updateOrderSummary();
 }
 
@@ -390,9 +464,9 @@ checkoutButton.addEventListener('click', () => {
         return;
     }
 
-    alert('Thank you for your order!');
-    order = [];
-    updateOrderSummary();
+    const total = order.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
+    alert(`Thank you for your order! Total: $${total.toFixed(2)}`);
+    clearOrder();
 });
 
 function openModal(itemId) {
