@@ -19,19 +19,45 @@ function displayMenuItems(items) {
     const menuItemsContainer = document.getElementById('menu-items');
     menuItemsContainer.innerHTML = '';
 
-    items.forEach(item => {
+    items.forEach((item, index) => {
         const menuItem = document.createElement('div');
-        menuItem.classList.add('menu-item', 'bg-white', 'shadow-md', 'rounded-lg', 'p-4', 'flex', 'flex-col', 'items-center', 'text-center');
+        menuItem.classList.add(
+            'menu-item',
+            'bg-white',
+            'rounded-xl',
+            'shadow-md',
+            'overflow-hidden',
+            'transform',
+            'transition-all',
+            'duration-300',
+            'hover:shadow-xl',
+            'hover:-translate-y-1',
+            'animate-fade-in'
+        );
+        menuItem.style.animationDelay = `${index * 100}ms`;
 
         menuItem.innerHTML = `
-            <img src="${item.image}" alt="${item.name}" class="w-full h-32 object-cover rounded-lg mb-4">
-            <h3 class="text-lg font-semibold mb-2">${item.name}</h3>
-            <p class="text-sm text-gray-600 mb-2">${item.description}</p>
-            <p class="text-lg font-bold text-green-500 mb-2">$${item.price.toFixed(2)}</p>
-            <div class="rating flex justify-center mb-4" data-rating="${item.rating}">
-                <!-- Stars will be generated here -->
+            <div class="relative group">
+                <img src="${item.image}" alt="${item.name}" class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </div>
-            <button class="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600" onclick="openModal(${item.id})">View Details</button>
+            <div class="p-4">
+                <h3 class="text-xl font-semibold text-gray-800 mb-2">${item.name}</h3>
+                <p class="text-sm text-gray-600 mb-3 line-clamp-2">${item.description}</p>
+                <div class="flex justify-between items-center mb-3">
+                    <p class="text-lg font-bold text-green-600">$${item.price.toFixed(2)}</p>
+                    <div class="rating flex items-center" data-rating="${item.rating}">
+                        <!-- Stars will be generated here -->
+                    </div>
+                </div>
+                <button 
+                    class="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-2 px-4 rounded-lg font-semibold
+                    hover:from-blue-600 hover:to-blue-700 transform hover:-translate-y-0.5 transition-all duration-200
+                    focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    onclick="openModal(${item.id})">
+                    View Details
+                </button>
+            </div>
         `;
 
         menuItemsContainer.appendChild(menuItem);
@@ -80,10 +106,28 @@ function updateOrderSummary() {
         totalPrice += item.price;
 
         const listItem = document.createElement('li');
-        listItem.classList.add('flex', 'justify-between', 'items-center', 'border-b', 'py-2');
+        listItem.classList.add(
+            'flex',
+            'justify-between',
+            'items-center',
+            'py-3',
+            'animate-fade-in'
+        );
+        listItem.style.animationDelay = `${index * 100}ms`;
+
         listItem.innerHTML = `
-            <span>${item.name} - $${item.price.toFixed(2)}</span>
-            <button class="text-red-500 hover:underline" onclick="removeFromOrder(${index})">Remove</button>
+            <div class="flex items-center gap-3">
+                <img src="${item.image}" alt="${item.name}" class="w-12 h-12 object-cover rounded-lg">
+                <div>
+                    <h4 class="font-semibold text-gray-800">${item.name}</h4>
+                    <p class="text-green-600 font-medium">$${item.price.toFixed(2)}</p>
+                </div>
+            </div>
+            <button 
+                class="text-red-500 hover:text-red-700 font-medium transition-colors duration-200"
+                onclick="removeFromOrder(${index})">
+                Remove
+            </button>
         `;
 
         orderList.appendChild(listItem);
@@ -110,9 +154,11 @@ reservationForm.addEventListener('submit', (e) => {
     const people = reservationForm.people.value;
 
     if (name && email && people) {
-        document.getElementById('registration').classList.add('hidden');
+        document.getElementById('registration').classList.add('animate-fade-in', 'hidden');
         document.getElementById('menu').classList.remove('hidden');
+        document.getElementById('menu').classList.add('animate-slide-up');
         document.getElementById('order-summary').classList.remove('hidden');
+        document.getElementById('order-summary').classList.add('animate-slide-up');
     } else {
         alert('Please fill in all the required fields.');
     }
@@ -133,12 +179,14 @@ checkoutButton.addEventListener('click', () => {
 
 function openModal(itemId) {
     const item = menuData.find(menuItem => menuItem.id === itemId);
+    const modal = document.getElementById('meal-modal');
+    const modalContent = modal.querySelector('.modal-content');
 
     document.getElementById('modal-meal-name').textContent = item.name;
     document.getElementById('modal-meal-image').src = item.image;
     document.getElementById('modal-meal-image').alt = item.name;
     document.getElementById('modal-meal-description').textContent = item.description;
-    document.getElementById('modal-meal-price').textContent = `Price: $${item.price.toFixed(2)}`;
+    document.getElementById('modal-meal-price').textContent = `$${item.price.toFixed(2)}`;
 
     const modalRatingElement = document.getElementById('modal-meal-rating');
     modalRatingElement.setAttribute('data-rating', item.rating);
@@ -149,9 +197,14 @@ function openModal(itemId) {
         closeModal();
     };
 
-    document.getElementById('meal-modal').classList.remove('hidden');
+    modal.classList.remove('hidden');
+    modalContent.classList.add('animate-slide-up');
 }
 
 function closeModal() {
-    document.getElementById('meal-modal').classList.add('hidden');
+    const modal = document.getElementById('meal-modal');
+    const modalContent = modal.querySelector('.modal-content');
+    
+    modalContent.classList.remove('animate-slide-up');
+    modal.classList.add('hidden');
 }
