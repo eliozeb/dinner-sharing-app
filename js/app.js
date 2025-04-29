@@ -144,24 +144,155 @@ function removeFromOrder(index) {
 document.getElementById('menu').classList.add('hidden');
 document.getElementById('order-summary').classList.add('hidden');
 
+function showError(inputElement, message) {
+    const errorDiv = inputElement.parentElement.querySelector('.error-message') || document.createElement('div');
+    errorDiv.className = 'error-message text-red-500 text-sm mt-1 animate-fade-in';
+    errorDiv.textContent = message;
+    
+    if (!inputElement.parentElement.querySelector('.error-message')) {
+        inputElement.parentElement.appendChild(errorDiv);
+    }
+    
+    inputElement.classList.add('border-red-500');
+    inputElement.classList.remove('border-gray-300');
+}
+
+function clearError(inputElement) {
+    const errorDiv = inputElement.parentElement.querySelector('.error-message');
+    if (errorDiv) {
+        errorDiv.remove();
+    }
+    inputElement.classList.remove('border-red-500');
+    inputElement.classList.add('border-gray-300');
+}
+
+function validateEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
+
+function validateReservationForm(formData) {
+    let isValid = true;
+    const errors = {};
+
+    // Validate name
+    if (!formData.name) {
+        errors.name = 'Name is required';
+        isValid = false;
+    } else if (formData.name.length < 2) {
+        errors.name = 'Name must be at least 2 characters long';
+        isValid = false;
+    }
+
+    // Validate email
+    if (!formData.email) {
+        errors.email = 'Email is required';
+        isValid = false;
+    } else if (!validateEmail(formData.email)) {
+        errors.email = 'Please enter a valid email address';
+        isValid = false;
+    }
+
+    // Validate number of people
+    if (!formData.people) {
+        errors.people = 'Number of people is required';
+        isValid = false;
+    } else if (formData.people < 1) {
+        errors.people = 'Number of people must be at least 1';
+        isValid = false;
+    } else if (formData.people > 20) {
+        errors.people = 'Maximum 20 people allowed per reservation';
+        isValid = false;
+    }
+
+    return { isValid, errors };
+}
+
+function showSuccessMessage() {
+    const successMessage = document.createElement('div');
+    successMessage.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transform transition-all duration-300 animate-slide-up';
+    successMessage.textContent = 'Reservation successful! Proceeding to menu...';
+    document.body.appendChild(successMessage);
+
+    setTimeout(() => {
+        successMessage.classList.add('opacity-0');
+        setTimeout(() => successMessage.remove(), 300);
+    }, 3000);
+}
+
+// Update the existing reservation form event listener
 const reservationForm = document.getElementById('reservation-form');
 
 reservationForm.addEventListener('submit', (e) => {
     e.preventDefault();
 
-    const name = reservationForm.name.value.trim();
-    const email = reservationForm.email.value.trim();
-    const people = reservationForm.people.value;
+    // Clear any existing errors
+    ['name', 'email', 'people'].forEach(field => {
+        clearError(reservationForm[field]);
+    });
 
-    if (name && email && people) {
-        document.getElementById('registration').classList.add('animate-fade-in', 'hidden');
-        document.getElementById('menu').classList.remove('hidden');
-        document.getElementById('menu').classList.add('animate-slide-up');
-        document.getElementById('order-summary').classList.remove('hidden');
-        document.getElementById('order-summary').classList.add('animate-slide-up');
+    const formData = {
+        name: reservationForm.name.value.trim(),
+        email: reservationForm.email.value.trim(),
+        people: parseInt(reservationForm.people.value)
+    };
+
+    const { isValid, errors } = validateReservationForm(formData);
+
+    if (isValid) {
+        // Store reservation details
+        localStorage.setItem('currentReservation', JSON.stringify({
+            ...formData,
+            timestamp: new Date().toISOString()
+        }));
+
+        // Show success message
+        showSuccessMessage();
+
+        // Smooth transition to menu
+        document.getElementById('registration').classList.add('opacity-0');
+        setTimeout(() => {
+            document.getElementById('registration').classList.add('hidden');
+            document.getElementById('menu').classList.remove('hidden');
+            document.getElementById('order-summary').classList.remove('hidden');
+            
+            // Trigger animations
+            requestAnimationFrame(() => {
+                document.getElementById('menu').classList.add('animate-slide-up');
+                document.getElementById('order-summary').classList.add('animate-slide-up');
+                document.getElementById('menu').classList.add('opacity-100');
+                document.getElementById('order-summary').classList.add('opacity-100');
+            });
+        }, 300);
     } else {
-        alert('Please fill in all the required fields.');
+        // Show errors for each invalid field
+        Object.entries(errors).forEach(([field, message]) => {
+            showError(reservationForm[field], message);
+        });
     }
+});
+
+// Add input event listeners for real-time validation
+['name', 'email', 'people'].forEach(field => {
+    const input = reservationForm[field];
+    input.addEventListener('input', () => {
+        clearError(input);
+        
+        const formData = {
+            name: reservationForm.name.value.trim(),
+            email: reservationForm.email.value.trim(),
+            people: parseInt(reservationForm.people.value)
+        };
+
+        const { errors } = validateReservationForm({
+            ...formData,
+            [field]: input.value.trim()
+        });
+
+        if (errors[field]) {
+            showError(input, errors[field]);
+        }
+    });
 });
 
 const checkoutButton = document.getElementById('checkout-button');

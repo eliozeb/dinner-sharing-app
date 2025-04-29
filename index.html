@@ -40,23 +40,26 @@
     <main class="flex-grow container mx-auto px-4 py-8">
         <div class="max-w-7xl mx-auto">
             <div class="flex flex-col lg:flex-row gap-8 items-start">
-                <section id="registration" class="w-full lg:w-1/3 bg-white shadow-xl rounded-2xl p-8 transform transition-all duration-300 hover:shadow-2xl">
+                <section id="registration" class="w-full lg:w-1/3 bg-white shadow-xl rounded-2xl p-8 transform transition-all duration-300 hover:shadow-2xl opacity-100">
                     <h2 class="text-2xl font-bold mb-6 text-gray-800">Reserve Your Table</h2>
-                    <form id="reservation-form" class="space-y-6">
+                    <form id="reservation-form" class="space-y-6" novalidate>
                         <div class="space-y-2">
                             <label for="name" class="block text-sm font-semibold text-gray-700">Full Name:</label>
                             <input type="text" id="name" name="name" required 
-                                class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200" />
+                                class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                                aria-describedby="name-error" />
                         </div>
                         <div class="space-y-2">
                             <label for="email" class="block text-sm font-semibold text-gray-700">Email Address:</label>
                             <input type="email" id="email" name="email" required 
-                                class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200" />
+                                class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                                aria-describedby="email-error" />
                         </div>
                         <div class="space-y-2">
                             <label for="people" class="block text-sm font-semibold text-gray-700">Number of People:</label>
-                            <input type="number" id="people" name="people" min="1" required 
-                                class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200" />
+                            <input type="number" id="people" name="people" min="1" max="20" required 
+                                class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                                aria-describedby="people-error" />
                         </div>
                         <button type="submit" 
                             class="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-3 rounded-lg font-semibold 
