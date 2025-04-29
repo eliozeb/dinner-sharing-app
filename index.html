@@ -1,132 +1,151 @@
 <!DOCTYPE html>
 <html lang="en" class="bg-gray-50">
+
 <head>
-    <meta charset="UTF-8" />
-    <title>Dinner Sharing App</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/styles.css" />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            animation: {
-              'fade-in': 'fadeIn 0.5s ease-out',
-              'slide-up': 'slideUp 0.5s ease-out',
+  <meta charset="UTF-8" />
+  <title>Dinner Sharing App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/styles.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          animation: {
+            'fade-in': 'fadeIn 0.5s ease-out',
+            'slide-up': 'slideUp 0.5s ease-out',
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' },
             },
-            keyframes: {
-              fadeIn: {
-                '0%': { opacity: '0' },
-                '100%': { opacity: '1' },
-              },
-              slideUp: {
-                '0%': { transform: 'translateY(20px)', opacity: '0' },
-                '100%': { transform: 'translateY(0)', opacity: '1' },
-              },
+            slideUp: {
+              '0%': { transform: 'translateY(20px)', opacity: '0' },
+              '100%': { transform: 'translateY(0)', opacity: '1' },
             },
           },
         },
-      };
-    </script>
+      },
+    };
+  </script>
 </head>
-<body class="min-h-screen flex flex-col">
-    <header class="bg-gradient-to-r from-gray-800 to-gray-900 text-white py-6 shadow-lg">
-        <div class="container mx-auto px-4">
-            <h1 class="text-4xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-yellow-200 to-yellow-500">Dinner Sharing App</h1>
-        </div>
-    </header>
 
-    <main class="flex-grow container mx-auto px-4 py-8">
-        <div class="max-w-7xl mx-auto">
-            <div class="flex flex-col lg:flex-row gap-8 items-start">
-                <section id="registration" class="w-full lg:w-1/3 bg-white shadow-xl rounded-2xl p-8 transform transition-all duration-300 hover:shadow-2xl opacity-100">
-                    <h2 class="text-2xl font-bold mb-6 text-gray-800">Reserve Your Table</h2>
-                    <form id="reservation-form" class="space-y-6" novalidate>
-                        <div class="space-y-2">
-                            <label for="name" class="block text-sm font-semibold text-gray-700">Full Name:</label>
-                            <input type="text" id="name" name="name" required 
-                                class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                                aria-describedby="name-error" />
-                        </div>
-                        <div class="space-y-2">
-                            <label for="email" class="block text-sm font-semibold text-gray-700">Email Address:</label>
-                            <input type="email" id="email" name="email" required 
-                                class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                                aria-describedby="email-error" />
-                        </div>
-                        <div class="space-y-2">
-                            <label for="people" class="block text-sm font-semibold text-gray-700">Number of People:</label>
-                            <input type="number" id="people" name="people" min="1" max="20" required 
-                                class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                                aria-describedby="people-error" />
-                        </div>
-                        <button type="submit" 
-                            class="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-3 rounded-lg font-semibold 
+<body class="min-h-screen flex flex-col">
+  <header class="bg-gradient-to-r from-gray-800 to-gray-900 text-white py-6 shadow-lg">
+    <div class="container mx-auto px-4">
+      <h1
+        class="text-4xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-yellow-200 to-yellow-500">
+        Dinner Sharing App</h1>
+    </div>
+  </header>
+
+  <main class="flex-grow container mx-auto px-4 py-8">
+    <div class="max-w-7xl mx-auto">
+      <div class="flex flex-col lg:flex-row gap-8 items-start">
+        <section id="registration"
+          class="w-full lg:w-1/3 bg-white shadow-xl rounded-2xl p-8 transform transition-all duration-300 hover:shadow-2xl opacity-100">
+          <h2 class="text-2xl font-bold mb-6 text-gray-800">Reserve Your Table</h2>
+          <form id="reservation-form" class="space-y-6" novalidate>
+            <div class="space-y-2">
+              <label for="name" class="block text-sm font-semibold text-gray-700">Full Name:</label>
+              <input type="text" id="name" name="name" required
+                class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                aria-describedby="name-error" />
+            </div>
+            <div class="space-y-2">
+              <label for="email" class="block text-sm font-semibold text-gray-700">Email Address:</label>
+              <input type="email" id="email" name="email" required
+                class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                aria-describedby="email-error" />
+            </div>
+            <div class="space-y-2">
+              <label for="people" class="block text-sm font-semibold text-gray-700">Number of People:</label>
+              <input type="number" id="people" name="people" min="1" max="20" required
+                class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                aria-describedby="people-error" />
+            </div>
+            <button type="submit" class="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-3 rounded-lg font-semibold 
                             hover:from-green-600 hover:to-emerald-700 transform hover:-translate-y-0.5 transition-all duration-200 
                             focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                            Proceed to Menu
-                        </button>
-                    </form>
-                </section>
+              Proceed to Menu
+            </button>
+          </form>
+        </section>
 
-                <div id="order-section" class="w-full lg:w-2/3 space-y-8">
-                    <section id="menu" class="bg-white shadow-xl rounded-2xl p-8 transform transition-all duration-300 hover:shadow-2xl">
-                        <h2 class="text-2xl font-bold mb-6 text-gray-800">Select Your Meals and Drinks</h2>
-                        <div id="menu-items" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                            <!-- Menu items will be injected here via JavaScript -->
-                        </div>
-                    </section>
+        <div id="order-section" class="w-full lg:w-2/3 space-y-8">
+          <section id="menu"
+            class="bg-white shadow-xl rounded-2xl p-8 transform transition-all duration-300 hover:shadow-2xl">
+            <div class="flex justify-between items-center mb-6">
+              <h2 class="text-2xl font-bold text-gray-800">Select Your Meals and Drinks</h2>
+              <div class="text-sm text-gray-500" id="items-count"></div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 auto-rows-fr" id="menu-items">
+              <!-- Menu items will be injected here via JavaScript -->
+              <template id="loading-skeleton">
+                <div class="animate-pulse">
+                  <div class="rounded-lg bg-gray-200 h-48 mb-4"></div>
+                  <div class="space-y-3">
+                    <div class="h-4 bg-gray-200 rounded w-3/4"></div>
+                    <div class="h-4 bg-gray-200 rounded w-1/2"></div>
+                    <div class="h-4 bg-gray-200 rounded w-3/4"></div>
+                  </div>
+                </div>
+              </template>
+            </div>
+          </section>
 
-                    <aside id="order-summary" class="bg-white shadow-xl rounded-2xl p-8 transform transition-all duration-300 hover:shadow-2xl">
-                        <h2 class="text-2xl font-bold mb-6 text-gray-800">Your Order</h2>
-                        <div class="divide-y divide-gray-200">
-                            <ul id="order-list" class="space-y-4 mb-6">
-                                <!-- Selected items will appear here -->
-                            </ul>
-                            <div class="pt-4">
-                                <p class="text-xl font-bold text-gray-800 flex justify-between items-center">
-                                    Total: <span class="text-2xl text-green-600">$<span id="total-price">0.00</span></span>
-                                </p>
-                                <button id="checkout-button" 
-                                    class="w-full mt-6 bg-gradient-to-r from-yellow-400 to-yellow-600 text-white py-3 rounded-lg font-semibold
+          <aside id="order-summary"
+            class="bg-white shadow-xl rounded-2xl p-8 transform transition-all duration-300 hover:shadow-2xl">
+            <h2 class="text-2xl font-bold mb-6 text-gray-800">Your Order</h2>
+            <div class="divide-y divide-gray-200">
+              <ul id="order-list" class="space-y-4 mb-6">
+                <!-- Selected items will appear here -->
+              </ul>
+              <div class="pt-4">
+                <p class="text-xl font-bold text-gray-800 flex justify-between items-center">
+                  Total: <span class="text-2xl text-green-600">$<span id="total-price">0.00</span></span>
+                </p>
+                <button id="checkout-button" class="w-full mt-6 bg-gradient-to-r from-yellow-400 to-yellow-600 text-white py-3 rounded-lg font-semibold
                                     hover:from-yellow-500 hover:to-yellow-700 transform hover:-translate-y-0.5 transition-all duration-200
                                     focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500">
-                                    Checkout
-                                </button>
-                            </div>
-                        </div>
-                    </aside>
-                </div>
+                  Checkout
+                </button>
+              </div>
             </div>
+          </aside>
         </div>
-    </main>
+      </div>
+    </div>
+  </main>
 
-    <footer class="bg-gradient-to-r from-gray-800 to-gray-900 text-white py-6 mt-8">
-        <div class="container mx-auto px-4 text-center">
-            <p class="text-gray-300">&copy; 2024 Dinner Sharing App</p>
-        </div>
-    </footer>
+  <footer class="bg-gradient-to-r from-gray-800 to-gray-900 text-white py-6 mt-8">
+    <div class="container mx-auto px-4 text-center">
+      <p class="text-gray-300">&copy; 2024 Dinner Sharing App</p>
+    </div>
+  </footer>
 
-    <div id="meal-modal" class="modal fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center hidden">
-        <div class="modal-content bg-white rounded-2xl p-8 w-11/12 max-w-2xl transform transition-all duration-300">
-            <span class="close-button absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl cursor-pointer 
+  <div id="meal-modal"
+    class="modal fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center hidden">
+    <div class="modal-content bg-white rounded-2xl p-8 w-11/12 max-w-2xl transform transition-all duration-300">
+      <span class="close-button absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl cursor-pointer 
                 transition-colors duration-200">&times;</span>
-            <h2 id="modal-meal-name" class="text-2xl font-bold mb-4 text-gray-800"></h2>
-            <img id="modal-meal-image" src="/images/" alt="" class="w-full h-64 object-cover rounded-xl mb-6" />
-            <p id="modal-meal-description" class="text-gray-600 mb-4 text-lg"></p>
-            <div id="modal-meal-rating" class="rating flex items-center mb-4 text-xl" data-rating=""></div>
-            <p id="modal-meal-price" class="text-2xl font-bold text-green-600 mb-6"></p>
-            <button id="modal-add-button" 
-                class="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-3 rounded-lg font-semibold
+      <h2 id="modal-meal-name" class="text-2xl font-bold mb-4 text-gray-800"></h2>
+      <img id="modal-meal-image" src="/images/" alt="" class="w-full h-64 object-cover rounded-xl mb-6" />
+      <p id="modal-meal-description" class="text-gray-600 mb-4 text-lg"></p>
+      <div id="modal-meal-rating" class="rating flex items-center mb-4 text-xl" data-rating=""></div>
+      <p id="modal-meal-price" class="text-2xl font-bold text-green-600 mb-6"></p>
+      <button id="modal-add-button" class="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-3 rounded-lg font-semibold
                 hover:from-blue-600 hover:to-blue-700 transform hover:-translate-y-0.5 transition-all duration-200
                 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                Add to Order
-            </button>
-        </div>
+        Add to Order
+      </button>
     </div>
+  </div>
 
-    <!-- JavaScript -->
-    <script src="js/app.js"></script>
+  <!-- JavaScript -->
+  <script src="js/app.js"></script>
 </body>
+
 </html>

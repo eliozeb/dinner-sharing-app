@@ -1,7 +1,15 @@
 {
+  "name": "dinner-sharing-app",
+  "version": "1.0.0",
+  "scripts": {
+    "optimize-images": "node scripts/optimize-images.js",
+    "start": "serve ."
+  },
   "devDependencies": {
     "autoprefixer": "^10.4.21",
     "postcss": "^8.5.3",
+    "sharp": "^0.32.6",
+    "serve": "^14.2.1",
     "tailwindcss": "^4.1.4"
   }
 }

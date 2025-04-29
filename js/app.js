@@ -5,18 +5,65 @@ document.addEventListener('DOMContentLoaded', () => {
 let menuData = [];
 let order = [];
 
+function showLoadingState() {
+    const menuItemsContainer = document.getElementById('menu-items');
+    menuItemsContainer.innerHTML = `
+        <div class="col-span-full flex justify-center items-center p-12">
+            <div class="animate-spin rounded-full h-16 w-16 border-4 border-gray-200 border-t-blue-500"></div>
+            <span class="ml-4 text-lg text-gray-600">Loading menu items...</span>
+        </div>
+    `;
+}
+
 function fetchMenuItems() {
+    showLoadingState();
     fetch('data/menu.json')
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch menu items');
+            }
+            return response.json();
+        })
         .then(data => {
             menuData = data;
             displayMenuItems(menuData);
         })
-        .catch(error => console.error('Error fetching menu data:', error));
+        .catch(error => {
+            console.error('Error fetching menu data:', error);
+            showErrorState();
+        });
+}
+
+function showErrorState() {
+    const menuItemsContainer = document.getElementById('menu-items');
+    menuItemsContainer.innerHTML = `
+        <div class="col-span-full text-center p-12">
+            <div class="text-red-500 text-xl mb-4">
+                <i class="fas fa-exclamation-circle text-4xl mb-4"></i>
+                <p>Failed to load menu items</p>
+            </div>
+            <button 
+                onclick="fetchMenuItems()"
+                class="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+            >
+                Try Again
+            </button>
+        </div>
+    `;
+}
+
+function getOptimizedImageUrl(imagePath, size = 'md') {
+    const filename = imagePath.split('/').pop().replace('.jpg', '');
+    return `/public/images/${filename}-${size}.webp`;
 }
 
 function displayMenuItems(items) {
     const menuItemsContainer = document.getElementById('menu-items');
+    const itemsCount = document.getElementById('items-count');
+    
+    // Update items count
+    itemsCount.textContent = `${items.length} items`;
+
     menuItemsContainer.innerHTML = '';
 
     items.forEach((item, index) => {
@@ -32,21 +79,60 @@ function displayMenuItems(items) {
             'duration-300',
             'hover:shadow-xl',
             'hover:-translate-y-1',
-            'animate-fade-in'
+            'animate-fade-in',
+            'focus-within:ring-2',
+            'focus-within:ring-blue-500'
         );
         menuItem.style.animationDelay = `${index * 100}ms`;
 
+        const imageUrl = item.image;
+        const webpSmall = getOptimizedImageUrl(imageUrl, 'sm');
+        const webpMedium = getOptimizedImageUrl(imageUrl, 'md');
+        const webpLarge = getOptimizedImageUrl(imageUrl, 'lg');
+        const jpgFallback = imageUrl.replace('images/', 'public/images/').replace('.jpg', '-md.jpg');
+
         menuItem.innerHTML = `
-            <div class="relative group">
-                <img src="${item.image}" alt="${item.name}" class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div class="relative group aspect-w-16 aspect-h-9">
+                <picture>
+                    <source
+                        media="(min-width: 1280px)"
+                        srcset="${webpLarge}"
+                        type="image/webp"
+                    >
+                    <source
+                        media="(min-width: 768px)"
+                        srcset="${webpMedium}"
+                        type="image/webp"
+                    >
+                    <source
+                        srcset="${webpSmall}"
+                        type="image/webp"
+                    >
+                    <img 
+                        src="${jpgFallback}" 
+                        alt="${item.name}" 
+                        class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
+                        loading="lazy"
+                        decoding="async"
+                    >
+                </picture>
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div class="absolute bottom-0 left-0 right-0 p-4">
+                        <span class="text-white text-sm">Click to view details</span>
+                    </div>
+                </div>
             </div>
             <div class="p-4">
-                <h3 class="text-xl font-semibold text-gray-800 mb-2">${item.name}</h3>
-                <p class="text-sm text-gray-600 mb-3 line-clamp-2">${item.description}</p>
+                <div class="flex justify-between items-start mb-2">
+                    <h3 class="text-xl font-semibold text-gray-800 line-clamp-1">${item.name}</h3>
+                    <span class="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full bg-green-100 text-green-800 text-sm">
+                        ${item.category}
+                    </span>
+                </div>
+                <p class="text-sm text-gray-600 mb-3 line-clamp-2 h-10">${item.description}</p>
                 <div class="flex justify-between items-center mb-3">
                     <p class="text-lg font-bold text-green-600">$${item.price.toFixed(2)}</p>
-                    <div class="rating flex items-center" data-rating="${item.rating}">
+                    <div class="rating flex items-center" data-rating="${item.rating}" role="img" aria-label="${item.rating} out of 5 stars">
                         <!-- Stars will be generated here -->
                     </div>
                 </div>
@@ -54,7 +140,8 @@ function displayMenuItems(items) {
                     class="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-2 px-4 rounded-lg font-semibold
                     hover:from-blue-600 hover:to-blue-700 transform hover:-translate-y-0.5 transition-all duration-200
                     focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                    onclick="openModal(${item.id})">
+                    onclick="openModal(${item.id})"
+                    aria-label="View details of ${item.name}">
                     View Details
                 </button>
             </div>
