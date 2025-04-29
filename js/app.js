@@ -21,26 +21,23 @@ function displayMenuItems(items) {
 
     items.forEach(item => {
         const menuItem = document.createElement('div');
-        menuItem.classList.add('menu-item');
+        menuItem.classList.add('menu-item', 'bg-white', 'shadow-md', 'rounded-lg', 'p-4', 'flex', 'flex-col', 'items-center', 'text-center');
 
         menuItem.innerHTML = `
-            <img src="${item.image}" alt="${item.name}">
-            <h3>${item.name}</h3>
-            <p>${item.description}</p>
-            <p class="price">$${item.price.toFixed(2)}</p>
-            <div class="rating" data-rating="${item.rating}">
+            <img src="${item.image}" alt="${item.name}" class="w-full h-32 object-cover rounded-lg mb-4">
+            <h3 class="text-lg font-semibold mb-2">${item.name}</h3>
+            <p class="text-sm text-gray-600 mb-2">${item.description}</p>
+            <p class="text-lg font-bold text-green-500 mb-2">$${item.price.toFixed(2)}</p>
+            <div class="rating flex justify-center mb-4" data-rating="${item.rating}">
                 <!-- Stars will be generated here -->
             </div>
-            <button onclick="openModal(${item.id})">View Details</button>
+            <button class="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600" onclick="openModal(${item.id})">View Details</button>
         `;
 
         menuItemsContainer.appendChild(menuItem);
         renderStars(menuItem.querySelector('.rating'));
     });
 }
-
-
-//Create a Function to Render Stars
 
 function renderStars(ratingElement) {
     const rating = parseFloat(ratingElement.getAttribute('data-rating'));
@@ -51,33 +48,26 @@ function renderStars(ratingElement) {
     let starsHtml = '';
 
     for (let i = 0; i < fullStars; i++) {
-        starsHtml += '<i class="fas fa-star"></i>';
+        starsHtml += '<i class="fas fa-star text-yellow-500"></i>';
     }
 
     if (halfStar) {
-        starsHtml += '<i class="fas fa-star-half-alt"></i>';
+        starsHtml += '<i class="fas fa-star-half-alt text-yellow-500"></i>';
     }
 
-    for (let i = starsHtml.length; i < maxStars * 28; i += 28) {
-        starsHtml += '<i class="far fa-star"></i>';
+    for (let i = fullStars + (halfStar ? 1 : 0); i < maxStars; i++) {
+        starsHtml += '<i class="far fa-star text-gray-300"></i>';
     }
 
     ratingElement.innerHTML = starsHtml;
-
     ratingElement.setAttribute('aria-label', `Rating: ${rating} out of 5 stars`);
 }
-
-
-
-// Add items to Order
 
 function addToOrder(itemId) {
     const item = menuData.find(menuItem => menuItem.id === itemId);
     order.push(item);
     updateOrderSummary();
 }
-
-// Update Order Summary
 
 function updateOrderSummary() {
     const orderList = document.getElementById('order-list');
@@ -90,9 +80,10 @@ function updateOrderSummary() {
         totalPrice += item.price;
 
         const listItem = document.createElement('li');
+        listItem.classList.add('flex', 'justify-between', 'items-center', 'border-b', 'py-2');
         listItem.innerHTML = `
-            ${item.name} - $${item.price.toFixed(2)}
-            <button onclick="removeFromOrder(${index})">Remove</button>
+            <span>${item.name} - $${item.price.toFixed(2)}</span>
+            <button class="text-red-500 hover:underline" onclick="removeFromOrder(${index})">Remove</button>
         `;
 
         orderList.appendChild(listItem);
@@ -101,45 +92,31 @@ function updateOrderSummary() {
     totalPriceElement.textContent = totalPrice.toFixed(2);
 }
 
-// Remove items from the list
-
 function removeFromOrder(index) {
     order.splice(index, 1);
     updateOrderSummary();
 }
 
-//Add Event Listener to the Registration Form
+document.getElementById('menu').classList.add('hidden');
+document.getElementById('order-summary').classList.add('hidden');
 
-// Initially hide the menu and order summary
-document.getElementById('menu').style.display = 'none';
-document.getElementById('order-summary').style.display = 'none';
-
-// Handle form submission
 const reservationForm = document.getElementById('reservation-form');
 
 reservationForm.addEventListener('submit', (e) => {
     e.preventDefault();
 
-    // Collect form data
     const name = reservationForm.name.value.trim();
     const email = reservationForm.email.value.trim();
     const people = reservationForm.people.value;
 
     if (name && email && people) {
-        // Hide the registration form
-        document.getElementById('registration').style.display = 'none';
-
-        // Show the menu and order summary
-        document.getElementById('menu').style.display = 'block';
-        document.getElementById('order-summary').style.display = 'block';
+        document.getElementById('registration').classList.add('hidden');
+        document.getElementById('menu').classList.remove('hidden');
+        document.getElementById('order-summary').classList.remove('hidden');
     } else {
         alert('Please fill in all the required fields.');
     }
 });
-
-
-
-//Handling Checkouts
 
 const checkoutButton = document.getElementById('checkout-button');
 
@@ -149,15 +126,10 @@ checkoutButton.addEventListener('click', () => {
         return;
     }
 
-    // Process the order (e.g., send data to a server)
     alert('Thank you for your order!');
-    // Reset the order
     order = [];
     updateOrderSummary();
 });
-
-
-//Modal structure
 
 function openModal(itemId) {
     const item = menuData.find(menuItem => menuItem.id === itemId);
@@ -167,9 +139,7 @@ function openModal(itemId) {
     document.getElementById('modal-meal-image').alt = item.name;
     document.getElementById('modal-meal-description').textContent = item.description;
     document.getElementById('modal-meal-price').textContent = `Price: $${item.price.toFixed(2)}`;
-    
-    
-    // Update the rating display
+
     const modalRatingElement = document.getElementById('modal-meal-rating');
     modalRatingElement.setAttribute('data-rating', item.rating);
     renderStars(modalRatingElement);
@@ -179,13 +149,9 @@ function openModal(itemId) {
         closeModal();
     };
 
-    document.getElementById('meal-modal').style.display = 'block';
+    document.getElementById('meal-modal').classList.remove('hidden');
 }
 
 function closeModal() {
-    document.getElementById('meal-modal').style.display = 'none';
+    document.getElementById('meal-modal').classList.add('hidden');
 }
-
-
-
-
