@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 let menuData = [];
 let order = [];
+let currentFilter = 'all';
 
 function showLoadingState() {
     const menuItemsContainer = document.getElementById('menu-items');
@@ -31,6 +32,7 @@ function fetchMenuItems() {
         })
         .then(data => {
             menuData = data;
+            initializeCategoryFilters(); // Initialize filters after loading menu data
             displayMenuItems(menuData);
         })
         .catch(error => {
@@ -62,12 +64,70 @@ function getOptimizedImageUrl(imagePath, size = 'md') {
     return `/public/images/${filename}-${size}.webp`;
 }
 
+function initializeCategoryFilters() {
+    const categories = new Set(menuData.map(item => item.category));
+    const filterContainer = document.getElementById('category-filters');
+    
+    // Clear existing filters except "All Items"
+    const allItemsButton = filterContainer.firstElementChild;
+    filterContainer.innerHTML = '';
+    filterContainer.appendChild(allItemsButton);
+
+    // Add category buttons
+    categories.forEach(category => {
+        const button = document.createElement('button');
+        button.className = 'category-filter px-4 py-2 rounded-full bg-gray-100 text-gray-600 hover:bg-blue-500 hover:text-white transition-all duration-300';
+        button.setAttribute('data-category', category);
+        button.textContent = category.charAt(0).toUpperCase() + category.slice(1);
+        filterContainer.appendChild(button);
+    });
+
+    // Add click handlers
+    document.querySelectorAll('.category-filter').forEach(button => {
+        button.addEventListener('click', () => {
+            const category = button.getAttribute('data-category');
+            filterMenuItems(category);
+            updateActiveFilter(button);
+        });
+    });
+}
+
+function updateActiveFilter(activeButton) {
+    document.querySelectorAll('.category-filter').forEach(button => {
+        button.classList.remove('active', 'bg-blue-500', 'text-white');
+        button.classList.add('bg-gray-100', 'text-gray-600');
+    });
+    
+    activeButton.classList.remove('bg-gray-100', 'text-gray-600');
+    activeButton.classList.add('active', 'bg-blue-500', 'text-white');
+}
+
+function filterMenuItems(category) {
+    currentFilter = category;
+    const filteredItems = category === 'all' 
+        ? menuData 
+        : menuData.filter(item => item.category === category);
+
+    // Fade out current items
+    const menuItemsContainer = document.getElementById('menu-items');
+    menuItemsContainer.style.opacity = '0';
+
+    // Update display after brief animation
+    setTimeout(() => {
+        displayMenuItems(filteredItems);
+        menuItemsContainer.style.opacity = '1';
+    }, 300);
+}
+
 function displayMenuItems(items) {
     const menuItemsContainer = document.getElementById('menu-items');
     const itemsCount = document.getElementById('items-count');
     
-    // Update items count
-    itemsCount.textContent = `${items.length} items`;
+    // Update items count with category info
+    const countText = currentFilter === 'all' 
+        ? `${items.length} items` 
+        : `${items.length} ${currentFilter} items`;
+    itemsCount.textContent = countText;
 
     menuItemsContainer.innerHTML = '';
 

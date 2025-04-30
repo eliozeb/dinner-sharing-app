@@ -39,3 +39,17 @@
     text-decoration: none;
     cursor: pointer;
 }
+
+/* Category Filter Styles */
+.category-filter {
+    transition: all 0.3s ease-in-out;
+}
+
+.category-filter.active {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Menu Items Grid Transitions */
+#menu-items {
+    transition: opacity 0.3s ease-in-out;
+}
