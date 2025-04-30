@@ -109,6 +109,22 @@
               </button>
               <!-- Category buttons will be added dynamically -->
             </div>
+            <!-- Add recommendations section -->
+            <div id="recommendations-section" class="mb-8 bg-blue-50 rounded-xl p-6">
+              <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold text-gray-800">Recommended for You</h3>
+                <button
+                  id="refresh-recommendations"
+                  class="text-blue-500 hover:text-blue-700 transition-colors duration-200"
+                  aria-label="Refresh recommendations"
+                >
+                  <i class="fas fa-sync-alt"></i>
+                </button>
+              </div>
+              <div id="recommendations-container" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                <!-- Recommendations will be injected here -->
+              </div>
+            </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 auto-rows-fr" id="menu-items">
               <!-- Menu items will be injected here via JavaScript -->
               <template id="loading-skeleton">

@@ -6,6 +6,8 @@ document.addEventListener('DOMContentLoaded', () => {
         order = JSON.parse(savedOrder);
         updateOrderSummary();
     }
+    updateRecommendations(); // Initialize recommendations
+    document.getElementById('refresh-recommendations').addEventListener('click', updateRecommendations);
 });
 
 let menuData = [];
@@ -552,8 +554,19 @@ checkoutButton.addEventListener('click', () => {
     }
 
     const total = order.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
+    
+    // Save order to history
+    const orderHistory = JSON.parse(localStorage.getItem('orderHistory') || '[]');
+    orderHistory.push({
+        items: order,
+        total: total,
+        date: new Date().toISOString()
+    });
+    localStorage.setItem('orderHistory', JSON.stringify(orderHistory));
+    
     alert(`Thank you for your order! Total: $${total.toFixed(2)}`);
     clearOrder();
+    updateRecommendations(); // Refresh recommendations after order
 });
 
 function openModal(itemId) {
@@ -622,4 +635,124 @@ function clearSearch() {
     currentSearchTerm = '';
     clearButton.classList.add('hidden');
     filterAndDisplayItems();
+}
+
+function getRecommendations() {
+    const orderHistory = JSON.parse(localStorage.getItem('orderHistory') || '[]');
+    const recommendations = {
+        fromHistory: [],
+        popular: [],
+        similar: []
+    };
+
+    if (orderHistory.length > 0) {
+        // Get categories and items from order history
+        const categoryFrequency = {};
+        const itemFrequency = {};
+        
+        orderHistory.forEach(order => {
+            order.items.forEach(item => {
+                // Track category frequency
+                categoryFrequency[item.category] = (categoryFrequency[item.category] || 0) + 1;
+                // Track item frequency
+                itemFrequency[item.id] = (itemFrequency[item.id] || 0) + 1;
+            });
+        });
+
+        // Find favorite categories
+        const favoriteCategories = Object.entries(categoryFrequency)
+            .sort((a, b) => b[1] - a[1])
+            .map(([category]) => category);
+
+        // Recommend items from favorite categories not yet ordered
+        if (favoriteCategories.length > 0) {
+            const recommendedFromHistory = menuData
+                .filter(item => item.category === favoriteCategories[0])
+                .filter(item => !itemFrequency[item.id])
+                .sort((a, b) => b.rating - a.rating)
+                .slice(0, 2);
+            
+            recommendations.fromHistory = recommendedFromHistory;
+        }
+
+        // Get similar items based on most recently ordered item
+        const lastOrder = orderHistory[orderHistory.length - 1];
+        if (lastOrder && lastOrder.items.length > 0) {
+            const lastOrderedItem = lastOrder.items[0];
+            recommendations.similar = menuData
+                .filter(item => 
+                    item.category === lastOrderedItem.category && 
+                    item.id !== lastOrderedItem.id)
+                .sort((a, b) => b.rating - a.rating)
+                .slice(0, 2);
+        }
+    }
+
+    // Always include popular items (highest rated)
+    recommendations.popular = menuData
+        .sort((a, b) => b.rating - a.rating)
+        .slice(0, 2);
+
+    return recommendations;
+}
+
+function updateRecommendations() {
+    const recommendations = getRecommendations();
+    const container = document.getElementById('recommendations-container');
+    const recommendationsSection = document.getElementById('recommendations-section');
+    
+    // Hide recommendations section if no history and showing all items
+    if (!recommendations.fromHistory.length && !recommendations.similar.length) {
+        recommendationsSection.classList.add('hidden');
+        return;
+    }
+
+    recommendationsSection.classList.remove('hidden');
+    container.innerHTML = '';
+
+    // Display recommendations with labels
+    const sections = [
+        { items: recommendations.fromHistory, label: 'Based on Your History' },
+        { items: recommendations.popular, label: 'Popular Items' },
+        { items: recommendations.similar, label: 'Similar to Your Last Order' }
+    ];
+
+    sections.forEach(section => {
+        if (section.items.length > 0) {
+            const sectionElement = document.createElement('div');
+            sectionElement.className = 'col-span-full';
+            sectionElement.innerHTML = `
+                <h4 class="text-sm font-medium text-gray-600 mb-3">${section.label}</h4>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    ${section.items.map((item, index) => `
+                        <div class="bg-white rounded-lg shadow-sm p-4 flex items-center gap-4 animate-fade-in" 
+                             style="animation-delay: ${index * 100}ms">
+                            <img src="${item.image}" alt="${item.name}" class="w-20 h-20 object-cover rounded-lg">
+                            <div class="flex-1">
+                                <h5 class="font-semibold text-gray-800">${item.name}</h5>
+                                <p class="text-sm text-gray-600 line-clamp-1">${item.description}</p>
+                                <div class="flex items-center justify-between mt-2">
+                                    <span class="text-green-600 font-medium">$${item.price.toFixed(2)}</span>
+                                    <button 
+                                        type="button"
+                                        onclick="addToOrder(${item.id})"
+                                        class="text-blue-500 hover:text-blue-700 transition-colors duration-200 px-3 py-1 rounded-lg hover:bg-blue-50">
+                                        Add to Order <i class="fas fa-plus ml-1"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            container.appendChild(sectionElement);
+        }
+    });
+
+    // Add rotation animation to refresh icon when clicked
+    const refreshButton = document.getElementById('refresh-recommendations');
+    refreshButton.querySelector('i').classList.add('animate-spin');
+    setTimeout(() => {
+        refreshButton.querySelector('i').classList.remove('animate-spin');
+    }, 500);
 }
