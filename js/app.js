@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     fetchMenuItems();
+    initializeSearch();
     const savedOrder = localStorage.getItem('currentOrder');
     if (savedOrder) {
         order = JSON.parse(savedOrder);
@@ -10,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
 let menuData = [];
 let order = [];
 let currentFilter = 'all';
+let currentSearchTerm = '';
 
 function showLoadingState() {
     const menuItemsContainer = document.getElementById('menu-items');
@@ -104,19 +106,44 @@ function updateActiveFilter(activeButton) {
 
 function filterMenuItems(category) {
     currentFilter = category;
-    const filteredItems = category === 'all' 
-        ? menuData 
-        : menuData.filter(item => item.category === category);
+    filterAndDisplayItems();
+}
 
-    // Fade out current items
-    const menuItemsContainer = document.getElementById('menu-items');
-    menuItemsContainer.style.opacity = '0';
+function filterAndDisplayItems() {
+    const filteredItems = menuData.filter(item => {
+        const matchesSearch = !currentSearchTerm || 
+            item.name.toLowerCase().includes(currentSearchTerm) ||
+            item.description.toLowerCase().includes(currentSearchTerm);
+            
+        const matchesCategory = currentFilter === 'all' || item.category === currentFilter;
+        
+        return matchesSearch && matchesCategory;
+    });
 
-    // Update display after brief animation
-    setTimeout(() => {
-        displayMenuItems(filteredItems);
-        menuItemsContainer.style.opacity = '1';
-    }, 300);
+    // Show no results state if needed
+    if (filteredItems.length === 0) {
+        const menuItemsContainer = document.getElementById('menu-items');
+        menuItemsContainer.innerHTML = `
+            <div class="col-span-full text-center py-12">
+                <div class="text-gray-500 mb-4">
+                    <i class="fas fa-search text-4xl mb-4"></i>
+                    <p class="text-lg">No items found matching "${currentSearchTerm}"</p>
+                </div>
+                ${currentFilter !== 'all' ? `
+                    <p class="text-sm text-gray-400 mb-4">Try removing the "${currentFilter}" category filter</p>
+                ` : ''}
+                <button 
+                    onclick="clearSearch()"
+                    class="text-blue-500 hover:text-blue-700 font-medium transition-colors duration-200"
+                >
+                    Clear Search
+                </button>
+            </div>
+        `;
+        return;
+    }
+
+    displayMenuItems(filteredItems);
 }
 
 function displayMenuItems(items) {
@@ -559,4 +586,40 @@ function closeModal() {
     
     modalContent.classList.remove('animate-slide-up');
     modal.classList.add('hidden');
+}
+
+function initializeSearch() {
+    const searchInput = document.getElementById('menu-search');
+    const clearButton = document.getElementById('clear-search');
+
+    // Debounce function to limit how often the search is performed
+    let searchTimeout;
+    
+    searchInput.addEventListener('input', (e) => {
+        clearButton.classList.toggle('hidden', !e.target.value);
+        
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            currentSearchTerm = e.target.value.toLowerCase().trim();
+            filterAndDisplayItems();
+        }, 300);
+    });
+
+    clearButton.addEventListener('click', () => {
+        searchInput.value = '';
+        currentSearchTerm = '';
+        clearButton.classList.add('hidden');
+        filterAndDisplayItems();
+        searchInput.focus();
+    });
+}
+
+function clearSearch() {
+    const searchInput = document.getElementById('menu-search');
+    const clearButton = document.getElementById('clear-search');
+    
+    searchInput.value = '';
+    currentSearchTerm = '';
+    clearButton.classList.add('hidden');
+    filterAndDisplayItems();
 }
