@@ -8,6 +8,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     updateRecommendations(); // Initialize recommendations
     document.getElementById('refresh-recommendations').addEventListener('click', updateRecommendations);
+    
+    // Add order history button handler
+    document.getElementById('view-history').addEventListener('click', openHistoryModal);
+    document.getElementById('date-filter').addEventListener('change', filterOrderHistory);
+    
+    // Set date filter max to today
+    document.getElementById('date-filter').max = new Date().toISOString().split('T')[0];
 });
 
 let menuData = [];
@@ -755,4 +762,124 @@ function updateRecommendations() {
     setTimeout(() => {
         refreshButton.querySelector('i').classList.remove('animate-spin');
     }, 500);
+}
+
+function openHistoryModal() {
+    const modal = document.getElementById('history-modal');
+    modal.classList.remove('hidden');
+    displayOrderHistory();
+}
+
+function closeHistoryModal() {
+    const modal = document.getElementById('history-modal');
+    modal.classList.add('hidden');
+}
+
+function displayOrderHistory(filterDate = null) {
+    const historyList = document.getElementById('order-history-list');
+    const orderHistory = JSON.parse(localStorage.getItem('orderHistory') || '[]');
+    
+    // Sort orders by date, newest first
+    orderHistory.sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    // Filter by date if specified
+    const filteredHistory = filterDate
+        ? orderHistory.filter(order => order.date.startsWith(filterDate))
+        : orderHistory;
+    
+    if (filteredHistory.length === 0) {
+        historyList.innerHTML = `
+            <div class="text-center py-8 text-gray-500">
+                ${filterDate ? 'No orders found for this date' : 'No order history yet'}
+            </div>
+        `;
+        return;
+    }
+    
+    historyList.innerHTML = filteredHistory.map((order, index) => `
+        <div class="py-6 animate-fade-in" style="animation-delay: ${index * 50}ms">
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <div class="text-sm text-gray-500">
+                        ${new Date(order.date).toLocaleString()}
+                    </div>
+                    <div class="font-semibold text-green-600 mt-1">
+                        Total: $${order.total.toFixed(2)}
+                    </div>
+                </div>
+                <button 
+                    onclick="toggleOrderDetails(${index})"
+                    class="text-blue-500 hover:text-blue-700 transition-colors"
+                >
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+            </div>
+            <div id="order-details-${index}" class="hidden">
+                <div class="bg-gray-50 rounded-lg p-4 mt-2">
+                    <h4 class="font-medium text-gray-700 mb-2">Order Details:</h4>
+                    <ul class="space-y-2">
+                        ${order.items.map(item => `
+                            <li class="flex justify-between items-center text-sm">
+                                <span>${item.name} × ${item.quantity || 1}</span>
+                                <span class="text-gray-600">$${(item.price * (item.quantity || 1)).toFixed(2)}</span>
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function toggleOrderDetails(index) {
+    const detailsElement = document.getElementById(`order-details-${index}`);
+    const button = detailsElement.previousElementSibling.querySelector('button i');
+    
+    if (detailsElement.classList.contains('hidden')) {
+        detailsElement.classList.remove('hidden');
+        button.classList.remove('fa-chevron-down');
+        button.classList.add('fa-chevron-up');
+    } else {
+        detailsElement.classList.add('hidden');
+        button.classList.remove('fa-chevron-up');
+        button.classList.add('fa-chevron-down');
+    }
+}
+
+function filterOrderHistory(event) {
+    const filterDate = event.target.value;
+    displayOrderHistory(filterDate);
+}
+
+function exportOrderHistory() {
+    const orderHistory = JSON.parse(localStorage.getItem('orderHistory') || '[]');
+    if (orderHistory.length === 0) {
+        alert('No order history to export');
+        return;
+    }
+    
+    // Format orders for CSV
+    const csvRows = [];
+    const headers = ['Date', 'Items', 'Quantity', 'Price', 'Total'];
+    csvRows.push(headers.join(','));
+    
+    orderHistory.forEach(order => {
+        order.items.forEach(item => {
+            csvRows.push([
+                new Date(order.date).toLocaleString(),
+                item.name.replace(/,/g, ';'),
+                item.quantity || 1,
+                item.price,
+                (item.price * (item.quantity || 1)).toFixed(2)
+            ].join(','));
+        });
+    });
+    
+    // Create and download CSV file
+    const csvContent = csvRows.join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `order_history_${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
 }
