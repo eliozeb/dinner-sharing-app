@@ -15,6 +15,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Set date filter max to today
     document.getElementById('date-filter').max = new Date().toISOString().split('T')[0];
+
+    // Initialize theme
+    initializeTheme();
 });
 
 let menuData = [];
@@ -882,4 +885,88 @@ function exportOrderHistory() {
     link.href = URL.createObjectURL(blob);
     link.download = `order_history_${new Date().toISOString().split('T')[0]}.csv`;
     link.click();
+}
+
+// Add theme management functions
+function initializeTheme() {
+    const themeToggle = document.getElementById('theme-toggle');
+    const isDark = localStorage.getItem('theme') === 'dark' || 
+                  (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    
+    // Set initial theme
+    updateTheme(isDark);
+    
+    // Listen for system theme changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+        if (!localStorage.getItem('theme')) {
+            updateTheme(e.matches);
+        }
+    });
+    
+    // Theme toggle button click handler
+    themeToggle.addEventListener('click', () => {
+        const isDarkMode = document.documentElement.classList.contains('dark');
+        updateTheme(!isDarkMode);
+        localStorage.setItem('theme', !isDarkMode ? 'dark' : 'light');
+    });
+}
+
+function updateTheme(isDark) {
+    const themeToggle = document.getElementById('theme-toggle');
+    const icon = themeToggle.querySelector('i');
+    
+    document.documentElement.classList.toggle('dark', isDark);
+    
+    // Update icon
+    icon.classList.remove('fa-sun', 'fa-moon');
+    icon.classList.add(isDark ? 'fa-sun' : 'fa-moon');
+    
+    // Update components for dark mode
+    updateComponentsTheme(isDark);
+}
+
+function updateComponentsTheme(isDark) {
+    // Update various UI components for dark mode
+    const components = {
+        sections: document.querySelectorAll('section, aside'),
+        headers: document.querySelectorAll('h2, h3, h4'),
+        texts: document.querySelectorAll('p:not(.text-green-600, .text-gray-300, .text-red-500)'),
+        inputs: document.querySelectorAll('input[type="text"], input[type="email"], input[type="number"], input[type="search"], input[type="date"]'),
+        modals: document.querySelectorAll('.modal-content')
+    };
+
+    // Apply dark mode styles
+    components.sections.forEach(section => {
+        section.classList.toggle('bg-white', !isDark);
+        section.classList.toggle('dark:bg-gray-800', isDark);
+    });
+
+    components.headers.forEach(header => {
+        header.classList.toggle('text-gray-800', !isDark);
+        header.classList.toggle('dark:text-gray-100', isDark);
+    });
+
+    components.texts.forEach(text => {
+        text.classList.toggle('text-gray-600', !isDark);
+        text.classList.toggle('dark:text-gray-300', isDark);
+    });
+
+    components.inputs.forEach(input => {
+        input.classList.toggle('bg-white', !isDark);
+        input.classList.toggle('dark:bg-gray-700', isDark);
+        input.classList.toggle('dark:text-gray-100', isDark);
+        input.classList.toggle('dark:border-gray-600', isDark);
+    });
+
+    components.modals.forEach(modal => {
+        modal.classList.toggle('bg-white', !isDark);
+        modal.classList.toggle('dark:bg-gray-800', isDark);
+    });
+
+    // Update recommendations section background
+    const recommendationsSection = document.getElementById('recommendations-section');
+    if (recommendationsSection) {
+        recommendationsSection.classList.toggle('bg-blue-50', !isDark);
+        recommendationsSection.classList.toggle('dark:bg-blue-900/20', isDark);
+    }
 }

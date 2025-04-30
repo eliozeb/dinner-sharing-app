@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="bg-gray-50">
+<html lang="en" class="bg-gray-50 dark:bg-gray-900">
 
 <head>
   <meta charset="UTF-8" />
@@ -10,6 +10,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
+      darkMode: 'class',
       theme: {
         extend: {
           animation: {
@@ -32,15 +33,20 @@
   </script>
 </head>
 
-<body class="min-h-screen flex flex-col">
-  <header class="bg-gradient-to-r from-gray-800 to-gray-900 text-white py-6 shadow-lg">
+<body class="min-h-screen flex flex-col transition-colors duration-300 dark:bg-gray-900">
+  <header class="bg-gradient-to-r from-gray-800 to-gray-900 text-white py-6 shadow-lg dark:from-black dark:to-gray-800">
     <div class="container mx-auto px-4">
       <div class="flex justify-between items-center">
         <h1 class="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-yellow-200 to-yellow-500">
           Dinner Sharing App</h1>
-        <button id="view-history" class="text-white hover:text-yellow-200 transition-colors">
-          <i class="fas fa-history mr-2"></i>Order History
-        </button>
+        <div class="flex items-center gap-4">
+          <button id="theme-toggle" class="text-white hover:text-yellow-200 transition-colors p-2 rounded-lg">
+            <i class="fas fa-moon"></i>
+          </button>
+          <button id="view-history" class="text-white hover:text-yellow-200 transition-colors">
+            <i class="fas fa-history mr-2"></i>Order History
+          </button>
+        </div>
       </div>
     </div>
   </header>
@@ -49,25 +55,25 @@
     <div class="max-w-7xl mx-auto">
       <div class="flex flex-col lg:flex-row gap-8 items-start">
         <section id="registration"
-          class="w-full lg:w-1/3 bg-white shadow-xl rounded-2xl p-8 transform transition-all duration-300 hover:shadow-2xl opacity-100">
-          <h2 class="text-2xl font-bold mb-6 text-gray-800">Reserve Your Table</h2>
+          class="w-full lg:w-1/3 bg-white dark:bg-gray-800 shadow-xl rounded-2xl p-8 transform transition-all duration-300 hover:shadow-2xl opacity-100">
+          <h2 class="text-2xl font-bold mb-6 text-gray-800 dark:text-gray-100">Reserve Your Table</h2>
           <form id="reservation-form" class="space-y-6" novalidate>
             <div class="space-y-2">
-              <label for="name" class="block text-sm font-semibold text-gray-700">Full Name:</label>
+              <label for="name" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Full Name:</label>
               <input type="text" id="name" name="name" required
-                class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                class="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 dark:bg-gray-700 dark:text-gray-100"
                 aria-describedby="name-error" />
             </div>
             <div class="space-y-2">
-              <label for="email" class="block text-sm font-semibold text-gray-700">Email Address:</label>
+              <label for="email" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Email Address:</label>
               <input type="email" id="email" name="email" required
-                class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                class="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 dark:bg-gray-700 dark:text-gray-100"
                 aria-describedby="email-error" />
             </div>
             <div class="space-y-2">
-              <label for="people" class="block text-sm font-semibold text-gray-700">Number of People:</label>
+              <label for="people" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Number of People:</label>
               <input type="number" id="people" name="people" min="1" max="20" required
-                class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                class="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 dark:bg-gray-700 dark:text-gray-100"
                 aria-describedby="people-error" />
             </div>
             <button type="submit" class="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-3 rounded-lg font-semibold 
@@ -80,10 +86,10 @@
 
         <div id="order-section" class="w-full lg:w-2/3 space-y-8">
           <section id="menu"
-            class="bg-white shadow-xl rounded-2xl p-8 transform transition-all duration-300 hover:shadow-2xl">
+            class="bg-white dark:bg-gray-800 shadow-xl rounded-2xl p-8 transform transition-all duration-300 hover:shadow-2xl">
             <div class="flex justify-between items-center mb-6">
-              <h2 class="text-2xl font-bold text-gray-800">Select Your Meals and Drinks</h2>
-              <div class="text-sm text-gray-500" id="items-count"></div>
+              <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Select Your Meals and Drinks</h2>
+              <div class="text-sm text-gray-500 dark:text-gray-400" id="items-count"></div>
             </div>
             <div class="mb-6">
               <div class="relative">
@@ -91,7 +97,7 @@
                   type="search"
                   id="menu-search"
                   placeholder="Search menu items..."
-                  class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                  class="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 dark:bg-gray-700 dark:text-gray-100"
                   aria-label="Search menu items"
                 />
                 <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
@@ -99,7 +105,7 @@
                 </span>
                 <button 
                   id="clear-search"
-                  class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 hidden"
+                  class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hidden"
                   aria-label="Clear search">
                   <i class="fas fa-times"></i>
                 </button>
@@ -107,19 +113,19 @@
             </div>
             <div class="mb-6 flex flex-wrap gap-2" id="category-filters">
               <button 
-                class="category-filter active px-4 py-2 rounded-full bg-gray-100 text-gray-600 hover:bg-blue-500 hover:text-white transition-all duration-300"
+                class="category-filter active px-4 py-2 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-blue-500 hover:text-white transition-all duration-300"
                 data-category="all">
                 All Items
               </button>
               <!-- Category buttons will be added dynamically -->
             </div>
             <!-- Add recommendations section -->
-            <div id="recommendations-section" class="mb-8 bg-blue-50 rounded-xl p-6">
+            <div id="recommendations-section" class="mb-8 bg-blue-50 dark:bg-blue-900/20 rounded-xl p-6">
               <div class="flex justify-between items-center mb-4">
-                <h3 class="text-xl font-semibold text-gray-800">Recommended for You</h3>
+                <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-100">Recommended for You</h3>
                 <button
                   id="refresh-recommendations"
-                  class="text-blue-500 hover:text-blue-700 transition-colors duration-200"
+                  class="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-200"
                   aria-label="Refresh recommendations"
                 >
                   <i class="fas fa-sync-alt"></i>
@@ -145,15 +151,15 @@
           </section>
 
           <aside id="order-summary"
-            class="bg-white shadow-xl rounded-2xl p-8 transform transition-all duration-300 hover:shadow-2xl">
-            <h2 class="text-2xl font-bold mb-6 text-gray-800">Your Order</h2>
-            <div class="divide-y divide-gray-200">
+            class="bg-white dark:bg-gray-800 shadow-xl rounded-2xl p-8 transform transition-all duration-300 hover:shadow-2xl">
+            <h2 class="text-2xl font-bold mb-6 text-gray-800 dark:text-gray-100">Your Order</h2>
+            <div class="divide-y divide-gray-200 dark:divide-gray-700">
               <ul id="order-list" class="space-y-4 mb-6">
                 <!-- Selected items will appear here -->
               </ul>
               <div class="pt-4">
-                <p class="text-xl font-bold text-gray-800 flex justify-between items-center">
-                  Total: <span class="text-2xl text-green-600">$<span id="total-price">0.00</span></span>
+                <p class="text-xl font-bold text-gray-800 dark:text-gray-100 flex justify-between items-center">
+                  Total: <span class="text-2xl text-green-600 dark:text-green-400">$<span id="total-price">0.00</span></span>
                 </p>
                 <button id="checkout-button" class="w-full mt-6 bg-gradient-to-r from-yellow-400 to-yellow-600 text-white py-3 rounded-lg font-semibold
                                     hover:from-yellow-500 hover:to-yellow-700 transform hover:-translate-y-0.5 transition-all duration-200
@@ -176,16 +182,16 @@
 
   <!-- Add Order History Modal -->
   <div id="history-modal" class="modal fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center hidden">
-    <div class="modal-content bg-white rounded-2xl p-8 w-11/12 max-w-4xl transform transition-all duration-300">
-      <span class="close-button" onclick="closeHistoryModal()">&times;</span>
+    <div class="modal-content bg-white dark:bg-gray-800 rounded-2xl p-8 w-11/12 max-w-4xl transform transition-all duration-300">
+      <span class="close-button text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300" onclick="closeHistoryModal()">&times;</span>
       <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-bold text-gray-800">Order History</h2>
+        <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Order History</h2>
         <div class="flex gap-4">
           <div class="relative">
             <input
               type="date"
               id="date-filter"
-              class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-gray-100"
             >
           </div>
           <button
@@ -196,7 +202,7 @@
           </button>
         </div>
       </div>
-      <div id="order-history-list" class="divide-y divide-gray-200 max-h-[60vh] overflow-y-auto">
+      <div id="order-history-list" class="divide-y divide-gray-200 dark:divide-gray-700 max-h-[60vh] overflow-y-auto">
         <!-- Order history items will be injected here -->
       </div>
     </div>
@@ -204,14 +210,13 @@
 
   <div id="meal-modal"
     class="modal fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center hidden">
-    <div class="modal-content bg-white rounded-2xl p-8 w-11/12 max-w-2xl transform transition-all duration-300">
-      <span class="close-button absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl cursor-pointer 
-                transition-colors duration-200">&times;</span>
-      <h2 id="modal-meal-name" class="text-2xl font-bold mb-4 text-gray-800"></h2>
+    <div class="modal-content bg-white dark:bg-gray-800 rounded-2xl p-8 w-11/12 max-w-2xl transform transition-all duration-300">
+      <span class="close-button absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 text-2xl cursor-pointer transition-colors duration-200">&times;</span>
+      <h2 id="modal-meal-name" class="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-100"></h2>
       <img id="modal-meal-image" src="/images/" alt="" class="w-full h-64 object-cover rounded-xl mb-6" />
-      <p id="modal-meal-description" class="text-gray-600 mb-4 text-lg"></p>
+      <p id="modal-meal-description" class="text-gray-600 dark:text-gray-300 mb-4 text-lg"></p>
       <div id="modal-meal-rating" class="rating flex items-center mb-4 text-xl" data-rating=""></div>
-      <p id="modal-meal-price" class="text-2xl font-bold text-green-600 mb-6"></p>
+      <p id="modal-meal-price" class="text-2xl font-bold text-green-600 dark:text-green-400 mb-6"></p>
       <button id="modal-add-button" class="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-3 rounded-lg font-semibold
                 hover:from-blue-600 hover:to-blue-700 transform hover:-translate-y-0.5 transition-all duration-200
                 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
